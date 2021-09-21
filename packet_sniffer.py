@@ -1,31 +1,51 @@
+#Write network sniffer tool(It must take input from command line)
+
 #!/usr/bin/python3
 print("Use Sudo")
-#Packet sniffer script using scapy
+
 from datetime import datetime 
 import sys
-import subprocess #Create another processs
+import subprocess 
 from scapy.all import *
 
-net_iface = input("Enter interface name: ")
+print(sys.argv)
 
-#promisceous mode transfer the interface data packets to cpu to processs and you capture from there
-subprocess.call(["ifconfig",net_iface,"promisc"]) #creating another process to run command
+net_iface = sys.argv[1] # taking interface name as command line argument
+print(net_iface)
 
-num_of_pkt = int(input("Enter the packet count you want to capture"))
+subprocess.call(["ifconfig",net_iface,"promisc"]) 
+num_of_pkt = int(sys.argv[2]) # taking no_of_packet as command line
+print(num_of_pkt)
 
-time_sec =int(input("Enter the time how long(in sec) run to capture"))
 
-proto = input("Enter the protocol(arp | icmp |all)")
+time_sec = int(sys.argv[3]) # taking time from command line
+print(time_sec)
 
-#sniff function call it and pass every packet in byte format
+
+proto = sys.argv[4] # taking protocol from command line(like all | icmp | arp)
+print(proto)
+
 def logs(packet):
+	packet.show()
 	print(f"SRC_MAC: {str(packet[0].src)} DEST_MAC: {str(packet[0].dst)}")
 
 
 if proto == "all":
-	sniff(iface = net_iface ,count = num_of_pkt, timeout = time_sec, prn=logs ) #sniffing packet
-elif proto == "arp" or proto == "icmp":
-	sniff(iface = net_iface, count = num_of_pkt,timout = time_sec , prn = logs , filter = proto) #sniffing packet
+	sniff(iface = net_iface ,count = num_of_pkt, timeout = time_sec, prn=logs ) 
+elif proto == "arp":
+	sniff(iface = net_iface, count = num_of_pkt,timout = time_sec , prn = logs , filter = proto) 
+elif proto == "icmp":
+	sniff(iface = net_iface, count = num_of_pkt,timout = time_sec , prn = logs , filter = proto)
 else:
 	print("Wrong protocol")
-
+"""
+-------------------------------------------output-----------------------------------------
+sudo python3 packet_sniffer.py ens33 1 1 all
+[sudo] password for sachin: 
+Use Sudo
+['network_sniffer_commandline.py', 'wlp7s0', '1', '1', 'all']
+wlp7s0
+1
+1
+all
+"""
